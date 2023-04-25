@@ -121,3 +121,70 @@ nextButton.addEventListener('click', nextSlide);
 
 showSlide(slideIndex);
 startSlider();
+
+
+//------------//
+
+const forms = document.querySelectorAll("form");
+function postData(form) {
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const formData = new FormData(form);
+    const obj = {};
+    formData.forEach((value, key) => {
+      obj[key] = value;
+    });
+    const json = JSON.stringify(obj);
+    const request = new XMLHttpRequest();
+    request.open("POST", "server.php");
+    request.setRequestHeader("Content-type", "application/json");
+    request.send(json);
+
+    request.addEventListener("load", () => {
+      let message;
+      if (request.status === 200) {
+        message = "Успешно!!!!";
+      } else if (request.status === 400) {
+        message = "Ошибка!";
+      } else if (request.status === 500) {
+        message = "Фатальная ошибка";
+      }
+
+      const modal = document.createElement("div");
+      modal.classList.add("modal2");
+      modal.innerHTML = `
+        <div class="modal__content2">
+          <div class="modal__close2">&times;</div>
+          <div class="modal__title2">${message}</div>
+        </div>
+      `;
+      document.body.appendChild(modal);
+
+      const closeModal = () => {
+        modal.classList.add("hide");
+        modal.classList.remove("show");
+        document.body.style.overflow = "";
+        setTimeout(() => {
+          modal.remove();
+        }, 3000);
+      };
+
+      modal.addEventListener("click", (event) => {
+        if (event.target == modal || event.target.classList.contains("modal__close")) {
+          closeModal();
+        }
+      });
+
+      modal.classList.add("show");
+      modal.classList.remove("hide");
+      document.body.style.overflow = "hidden";
+      setTimeout(closeModal, 3000);
+    });
+  });
+}
+
+
+forms.forEach((item) => {
+  postData(item);
+});
+
