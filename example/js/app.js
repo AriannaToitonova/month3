@@ -187,4 +187,3 @@ function postData(form) {
 forms.forEach((item) => {
   postData(item);
 });
-
